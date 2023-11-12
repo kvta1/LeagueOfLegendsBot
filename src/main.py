@@ -26,9 +26,8 @@ def main():
     matches_df, match_metadata_df = process_match_data(summoners_df, api_client)
     # print(summoners_df['puuid'])
     # print(matches_df)
-    print(match_metadata_df['Tampai'][0])
     
-    print('bullshit')
-    print(match_metadata_df.shape)
+    print(match_metadata_df)
 if __name__ == "__main__":
     main()
+    

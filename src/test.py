@@ -12,6 +12,8 @@ data = {
 # Create the DataFrame
 df = pd.DataFrame(data)
 
+print(df)
+
 # Rename columns for clarity
 df.columns = [f'Match_{i}' for i in range(len(data))]
 
