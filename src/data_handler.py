@@ -1,6 +1,7 @@
 # data_handler.py
 import pandas as pd
 from summoner_class import Summoner
+import numpy as np
 
 
 def make_summoners(summoner_names, api_client):
@@ -41,26 +42,25 @@ def process_match_data(summoners_df, api_client):
         
         for id in matchids:
             metadata = api_client.fetch_match_metadata(id)
-            match_temp_data.append(id)
+            match_temp_metadata.append(id)
             match_temp_metadata.append(metadata)
 
-        match_metadata.append((match_temp_data, match_temp_metadata))
-        
+        match_metadata.append(match_temp_metadata)
+    
+    print('Len of match_metadata: ', len(match_metadata))
+    
     # Create columns for matchId and metadata
     match_columns = []
     metadata_columns = []
-    for i in range(len(match_data)):
-        match_columns.append(f'match_{i}_id')
-        metadata_columns.append(f'match_{i}_metadata')
-    
-    matches_df = pd.DataFrame(match_data, index = summoners_df['name'], columns=match_columns)
+
+    match_columns = [f'match_{i}_id' for i in range(len(match_data[1]))]
+    metadata_columns = [f'match_{i}_id' for i in range(len(match_data[1]))] + [f'match_{i}_metadata' for i in range(len(match_data[1]))]
+
+    # Interleave the columns to stagger match IDs and metadata
+    metadata_columns = [col for pair in zip(metadata_columns[:len(match_data[1])], metadata_columns[len(match_data[1]):]) for col in pair]
+
+    matches_df = pd.DataFrame(match_data, index = summoners_df['name'], columns = match_columns)
     match_metadata_df = pd.DataFrame(match_metadata, index = summoners_df['name'], columns=metadata_columns)
-    
-    # matches_df = pd.DataFrame(match_data, index = summoners_df['name'])
-    # match_metadata_df = pd.DataFrame(match_metadata, index = summoners_df['name'])
     
     return matches_df, match_metadata_df
         
-    
-    
-
