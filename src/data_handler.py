@@ -72,6 +72,8 @@ def get_match_info(summoners_df, metadata_df):
     
     wins = 0
     losses = 0
+    
+    # Loops over every player in summoners_df and checks game statistics in metadata
     for name in summoners_df['name']:
         puuid = summoners_df.loc[name]['puuid']
         
@@ -79,10 +81,10 @@ def get_match_info(summoners_df, metadata_df):
 
             match = metadata_df.loc[name].iloc[match_idx]
             
+            # Find index of player that we are looking for
             part_idx = match['metadata']['participants'].index(puuid)
             
-            print('Participant index: ', part_idx)
-            
+            # Check if player won
             win = match['info']['participants'][part_idx]['win']
 
             if win:
@@ -92,22 +94,3 @@ def get_match_info(summoners_df, metadata_df):
 
     print(f'Amount of total wins: {wins}')
     print(f'Amount of total losses: {losses}')
-
-# def get_match_info(summoners_df, metadata_df):
-    
-#     wins = 0
-#     losses = 0
-#     for name in summoners_df['name']:
-#         puuid = summoners_df.loc[name]['puuid']
-        
-#         for match in metadata_df.loc[name]:
-#             print('Type match is: ', type(match))
-#             win = match['info']['participants'][puuid]['win']
-
-#             if win:
-#                 wins += 1
-#             else:
-#                 losses += 1
-
-#     print(f'Amount of total wins: {wins}')
-#     print(f'Amount of total losses: {losses}')
