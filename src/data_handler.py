@@ -29,38 +29,85 @@ def process_match_data(summoners_df, api_client):
     # losses = len(match_data["matches"]) - wins
     # return wins, losses
     match_data = []
+    match_ids = []
     match_metadata = []
     
     
     for puuid in summoners_df['puuid']:
         match_temp_data = []
+        match_temp_ids = []
         match_temp_metadata = []
         
         matchids = api_client.fetch_matchid(puuid)
-        match_data.append(matchids)
-        
         
         for id in matchids:
             metadata = api_client.fetch_match_metadata(id)
-            match_temp_metadata.append(id)
+            
             match_temp_metadata.append(metadata)
+            match_temp_ids.append(id)
+            
+            match_temp_data.append(id)
+            match_temp_data.append(metadata)
 
+        match_data.append(match_temp_data)
+        match_ids.append(match_temp_ids)
         match_metadata.append(match_temp_metadata)
     
-    print('Len of match_metadata: ', len(match_metadata))
     
-    # Create columns for matchId and metadata
-    match_columns = []
-    metadata_columns = []
+    match_columns = [f'match_{i}_id' for i in range(len(match_metadata[1]))]
+    metadata_columns = [f'match_{i}_metadata' for i in range(len(match_metadata[1]))]
+    data_columns = [f'match_{i}_id' for i in range(len(match_metadata[1]))] + [f'match_{i}_metadata' for i in range(len(match_metadata[1]))]
 
-    match_columns = [f'match_{i}_id' for i in range(len(match_data[1]))]
-    metadata_columns = [f'match_{i}_id' for i in range(len(match_data[1]))] + [f'match_{i}_metadata' for i in range(len(match_data[1]))]
-
+    
     # Interleave the columns to stagger match IDs and metadata
-    metadata_columns = [col for pair in zip(metadata_columns[:len(match_data[1])], metadata_columns[len(match_data[1]):]) for col in pair]
-
-    matches_df = pd.DataFrame(match_data, index = summoners_df['name'], columns = match_columns)
-    match_metadata_df = pd.DataFrame(match_metadata, index = summoners_df['name'], columns=metadata_columns)
+    data_columns = [col for pair in zip(data_columns[:len(match_metadata[1])], data_columns[len(match_metadata[1]):]) for col in pair]
     
-    return matches_df, match_metadata_df
+    matchids_df = pd.DataFrame(match_ids, index = summoners_df['name'], columns = match_columns)
+    match_data_df = pd.DataFrame(match_data, index = summoners_df['name'], columns=data_columns)
+    metadata_df = pd.DataFrame(match_metadata, index = summoners_df['name'], columns = metadata_columns)
+    
+    return matchids_df, match_data_df, metadata_df
+
+def get_match_info(summoners_df, metadata_df):
+    
+    wins = 0
+    losses = 0
+    for name in summoners_df['name']:
+        puuid = summoners_df.loc[name]['puuid']
         
+        for match_idx in range(len(metadata_df.loc[name])):
+
+            match = metadata_df.loc[name].iloc[match_idx]
+            
+            part_idx = match['metadata']['participants'].index(puuid)
+            
+            print('Participant index: ', part_idx)
+            
+            win = match['info']['participants'][part_idx]['win']
+
+            if win:
+                wins += 1
+            else:
+                losses += 1
+
+    print(f'Amount of total wins: {wins}')
+    print(f'Amount of total losses: {losses}')
+
+# def get_match_info(summoners_df, metadata_df):
+    
+#     wins = 0
+#     losses = 0
+#     for name in summoners_df['name']:
+#         puuid = summoners_df.loc[name]['puuid']
+        
+#         for match in metadata_df.loc[name]:
+#             print('Type match is: ', type(match))
+#             win = match['info']['participants'][puuid]['win']
+
+#             if win:
+#                 wins += 1
+#             else:
+#                 losses += 1
+
+#     print(f'Amount of total wins: {wins}')
+#     print(f'Amount of total losses: {losses}')

@@ -25,11 +25,11 @@ def main():
     summoners_df = make_summoners(summoner_names, api_client)
     
     print('Getting match data:')
-    matches_df, match_metadata_df = process_match_data(summoners_df, api_client)
+    matchids_df, match_data_df, metadata_df = process_match_data(summoners_df, api_client)
+    
+    get_match_info(summoners_df, metadata_df)
     
     print('check')
-    
-    print(match_metadata_df)
 if __name__ == "__main__":
     main()
     
