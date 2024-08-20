@@ -5,7 +5,7 @@ import openpyxl
 import os
 
 # Riot Games API Key
-api_key = "RGAPI-da7807b6-8502-4379-b972-31333bc3415d"
+api_key = "RGAPI-25e3b0ba-41d9-48fd-80fe-0ef91b2e2e46"
 
 # Make the API client
 api_client = APIClient(api_key)
@@ -27,9 +27,9 @@ def main():
     print('Getting match data:')
     matchids_df, match_data_df, metadata_df = process_match_data(summoners_df, api_client)
     
-    get_match_info(summoners_df, metadata_df)
+    winloss_df = get_match_info(summoners_df, metadata_df)
     
-    print('check')
+    print(winloss_df)
 if __name__ == "__main__":
     main()
     

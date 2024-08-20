@@ -70,12 +70,15 @@ def process_match_data(summoners_df, api_client):
 
 def get_match_info(summoners_df, metadata_df):
     
-    wins = 0
-    losses = 0
+    winloss_data = []
     
     # Loops over every player in summoners_df and checks game statistics in metadata
     for name in summoners_df['name']:
         puuid = summoners_df.loc[name]['puuid']
+        
+        winloss = []
+        win_count = 0
+        loss_count = 0
         
         for match_idx in range(len(metadata_df.loc[name])):
 
@@ -88,9 +91,19 @@ def get_match_info(summoners_df, metadata_df):
             win = match['info']['participants'][part_idx]['win']
 
             if win:
-                wins += 1
+                win_count += 1
             else:
-                losses += 1
+                loss_count += 1
+        
+        winrate = 100 * win_count/(win_count+loss_count)
+        
+        winloss.append(win_count)
+        winloss.append(loss_count)
+        winloss.append(winrate)
+        winloss_data.append(winloss)
 
-    print(f'Amount of total wins: {wins}')
-    print(f'Amount of total losses: {losses}')
+    winloss_columns = ['Wins', 'Losses', 'Winrate %']
+    
+    winloss_df = pd.DataFrame(winloss_data, index = summoners_df['name'], columns = winloss_columns)
+
+    return winloss_df
