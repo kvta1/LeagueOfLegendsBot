@@ -9,6 +9,3 @@ class Summoner:
         self.profileIconId = profileIconId
         self.revisionDate = revisionDate
         self.summonerLevel = summonerLevel
-        
-    
-    
