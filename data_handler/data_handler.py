@@ -1,6 +1,6 @@
 # data_handler.py
 import pandas as pd
-from summoner_class import Summoner
+from .summoner_class import Summoner
 import numpy as np
 
 
